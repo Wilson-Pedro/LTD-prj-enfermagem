@@ -199,8 +199,8 @@ $id_paciente = trim($id_paciente);
                             <th scope="col" style="text-align:center">Pressão Arterial</th>
                             <th scope="col" style="text-align:center">Glicemia</th>
                             <th scope="col" style="text-align:center">Pulso</th>
-                            <th scope="col" style="text-align:center">FC</th>
-                            <th scope="col" style="text-align:center">FR</th>
+                            <th scope="col" style="text-align:center">F.Cardíaca</th>
+                            <th scope="col" style="text-align:center">F.Respiratória </th>
                             <th scope="col" style="text-align:center">Tempertura Axilar</th>
                             <th scope="col" style="text-align:center">Observação</th>
                             </tr>

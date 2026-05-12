@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 13/11/2025 às 00:36
+-- Tempo de geração: 26/04/2026 às 21:25
 -- Versão do servidor: 10.6.15-MariaDB
 -- Versão do PHP: 8.2.0
 
@@ -150,6 +150,7 @@ CREATE TABLE `tbl_paciente` (
   `telefone` varchar(50) NOT NULL,
   `cartao_sus` varchar(255) NOT NULL,
   `id_endereco` int(11) NOT NULL,
+  `id_paciente_status` int(11) NOT NULL,
   `registro` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -157,14 +158,33 @@ CREATE TABLE `tbl_paciente` (
 -- Despejando dados para a tabela `tbl_paciente`
 --
 
-INSERT INTO `tbl_paciente` (`id`, `nome`, `data_nascimento`, `nome_mae`, `mae_nao_consta`, `cpf`, `rg`, `ssp`, `telefone`, `cartao_sus`, `id_endereco`, `registro`) VALUES
-(9, 'Rafael Silva', '1998-10-16', 'Julia', 1, '1234567', '45646546', 'MA', '98986117230', '2342343240', 9, '2025-10-17 00:28:46'),
-(10, 'Marcelo Abreu', '1999-11-06', 'Carla', 0, '785.006.420-84', '28.850.458-6', 'MA', '99865212201', '', 12, '2025-11-05 00:11:03'),
-(11, 'Helena Carla', '1998-10-28', 'Lara', 0, '780.616.422-81', '28.850.128-2', 'MA', '(88) 98231-2345', '', 13, '2025-11-05 00:31:26'),
-(12, 'Wellinton', '1994-11-12', 'Maria', 0, '960.234.402-02', '28.120.128-2', 'MA', '(11) 92211-2345', '', 14, '2025-11-06 13:26:36'),
-(13, 'Henrique', '1996-11-12', 'Maria', 0, '901.704.402-11', '78.120.128-2', 'MA', '(11) 92881-2345', '', 15, '2025-11-06 13:28:57'),
-(14, 'Roberto Murilo Viana', '2002-11-06', 'Rosa Maria Campelo', 0, '760.267.102-11', '18.810.878-0', 'MA', '98996562230', '', 16, '2025-11-08 14:20:37'),
-(15, 'Roberto Murilo Viana', '2002-11-06', 'Rosa Maria Campelo', 0, '760.267.102-11', '18.810.878-0', 'MA', '98996562230', '', 17, '2025-11-08 14:21:20');
+INSERT INTO `tbl_paciente` (`id`, `nome`, `data_nascimento`, `nome_mae`, `mae_nao_consta`, `cpf`, `rg`, `ssp`, `telefone`, `cartao_sus`, `id_endereco`, `id_paciente_status`, `registro`) VALUES
+(9, 'Rafael Silva', '1998-10-16', 'Julia', 1, '1234567', '45646546', 'MA', '98986117230', '2342343240', 9, 1, '2025-10-17 00:28:46'),
+(10, 'Marcelo Abreu', '1999-11-06', 'Carla', 0, '785.006.420-84', '28.850.458-6', 'MA', '99865212201', '', 12, 1, '2025-11-05 00:11:03'),
+(11, 'Helena Carla', '1998-10-28', 'Lara', 0, '780.616.422-81', '28.850.128-2', 'MA', '(88) 98231-2345', '', 13, 1, '2025-11-05 00:31:26'),
+(12, 'Wellinton', '1994-11-12', 'Maria', 0, '960.234.402-02', '28.120.128-2', 'MA', '(11) 92211-2345', '', 14, 2, '2025-11-06 13:26:36'),
+(13, 'Henrique', '1996-11-12', 'Maria', 0, '901.704.402-11', '78.120.128-2', 'MA', '(11) 92881-2345', '', 15, 1, '2025-11-06 13:28:57'),
+(14, 'Roberto Murilo Viana', '2002-11-06', 'Rosa Maria Campelo', 0, '760.267.102-11', '18.810.878-0', 'MA', '98996562230', '', 16, 2, '2025-11-08 14:20:37'),
+(15, 'Roberto Murilo Viana', '2002-11-06', 'Rosa Maria Campelo', 0, '760.267.102-11', '18.810.878-0', 'MA', '98996562230', '', 17, 1, '2025-11-08 14:21:20');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `tbl_paciente_status`
+--
+
+CREATE TABLE `tbl_paciente_status` (
+  `id` int(11) NOT NULL,
+  `status` varchar(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `tbl_paciente_status`
+--
+
+INSERT INTO `tbl_paciente_status` (`id`, `status`) VALUES
+(1, 'ativo'),
+(2, 'inativo');
 
 -- --------------------------------------------------------
 
@@ -275,7 +295,14 @@ ALTER TABLE `tbl_exame_fisico`
 --
 ALTER TABLE `tbl_paciente`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_paciente_endereco` (`id_endereco`);
+  ADD KEY `fk_paciente_endereco` (`id_endereco`),
+  ADD KEY `fk_paciente_status` (`id_paciente_status`);
+
+--
+-- Índices de tabela `tbl_paciente_status`
+--
+ALTER TABLE `tbl_paciente_status`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Índices de tabela `tbl_prontuario`
@@ -334,6 +361,12 @@ ALTER TABLE `tbl_paciente`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
+-- AUTO_INCREMENT de tabela `tbl_paciente_status`
+--
+ALTER TABLE `tbl_paciente_status`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT de tabela `tbl_prontuario`
 --
 ALTER TABLE `tbl_prontuario`
@@ -378,7 +411,8 @@ ALTER TABLE `tbl_exame_fisico`
 -- Restrições para tabelas `tbl_paciente`
 --
 ALTER TABLE `tbl_paciente`
-  ADD CONSTRAINT `fk_paciente_endereco` FOREIGN KEY (`id_endereco`) REFERENCES `tbl_endereco` (`id`);
+  ADD CONSTRAINT `fk_paciente_endereco` FOREIGN KEY (`id_endereco`) REFERENCES `tbl_endereco` (`id`),
+  ADD CONSTRAINT `fk_paciente_status` FOREIGN KEY (`id_paciente_status`) REFERENCES `tbl_paciente_status` (`id`);
 
 --
 -- Restrições para tabelas `tbl_prontuario`
