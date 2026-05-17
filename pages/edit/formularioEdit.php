@@ -42,6 +42,8 @@
 
             $data_nascimento_update = $_POST['data_nascimento'];
 
+            $id_paciente_status  = $_POST['paciente_status'];
+
             //DADOS PARA TBL_ENDERECO
             $cep_update = $_POST['cep'];
             $rua_update = $_POST['rua'];
@@ -59,12 +61,12 @@
             $sql_update_paciente = "UPDATE tbl_paciente SET nome = ?,data_nascimento = ?,
                         nome_mae = ?,mae_nao_consta = ?, cpf = ?,
                         rg = ?,ssp = ?,
-                        telefone = ?, cartao_sus = ?
+                        telefone = ?, cartao_sus = ?, id_paciente_status = ?
                         WHERE id = ?";
 
             $stmt_paciente_update = $mysqli->prepare($sql_update_paciente);
-            $stmt_paciente_update->bind_param("sssisssssi", $nome_update, $data_nascimento_update, $nome_mae_update, $nome_mae_consta_update,
-                                                            $cpf_update, $rg_update, $ssp_update, $telefone_update, $cartao_sus_update, $id_paciente);
+            $stmt_paciente_update->bind_param("sssisssssii", $nome_update, $data_nascimento_update, $nome_mae_update, $nome_mae_consta_update,
+                                                            $cpf_update, $rg_update, $ssp_update, $telefone_update, $cartao_sus_update, $id_paciente_status, $id_paciente);
 
             $stmt_paciente_update->execute();
             $stmt_paciente_update->close();
@@ -89,6 +91,13 @@
             background: #146c8f;
             background: linear-gradient(180deg,rgba(20, 108, 143, 1) 0%, rgba(59, 157, 196, 1) 100%);  
         }
+
+        .form-group select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
@@ -103,14 +112,15 @@
 
         <?php 
             try {
-                $stmt_sql = $mysqli->prepare("SELECT pr.id AS prontuarioId, pr.numero_prontuario, pr.data_atendimento , pa.nome, pa.cpf, pa.data_nascimento, 
-                pa.rg, pa.ssp, pa.nome_mae, pa.mae_nao_consta,
+                $stmt_sql = $mysqli->prepare("SELECT pr.id AS prontuarioId, pr.numero_prontuario, pr.data_atendimento, pa.nome, pa.cpf, pa.data_nascimento, 
+                pa.rg, pa.ssp, pa.nome_mae, pa.mae_nao_consta, pa.id_paciente_status, ps.status,
                 pa.telefone, pa.cartao_sus, 
                 en.id AS enderecoId, en.cep, en.rua, en.bairro, en.cidade, en.complemento, us.nome AS nome_user
                 FROM tbl_prontuario pr 
                 JOIN tbl_paciente pa ON pa.id = pr.id_paciente 
                 JOIN tbl_endereco en ON en.id = pa.id_endereco 
                 JOIN tbl_users us ON us.id = pr.id_user
+                JOIN tbl_paciente_status ps ON ps.id = pa.id_paciente_status 
                 WHERE pr.id = ?
                 LIMIT 1;");
                 
@@ -141,7 +151,25 @@
                             $cidade = htmlspecialchars($row['cidade']);
                             $complemento = htmlspecialchars($row['complemento']);
                             $nome_user = htmlspecialchars($row['nome_user']);
+                            $status = htmlspecialchars($row['status']);
         ?>
+
+        <div class="form-group">
+            <label>Tipo paciente</label>
+            <select id="paciente_status " name="paciente_status"  class="form-group">
+                <option value="<?php echo $row['id_paciente_status']; ?>" selected> <?php echo $row['status'] ?> </option>
+                <?php
+                    $id_paciente_status = $row['id_paciente_status'];
+                    $sql_paciente_status = "SELECT * FROM tbl_paciente_status WHERE id !=  $id_paciente_status";
+                    $result_paciente_status = mysqli_query($mysqli, $sql_paciente_status);
+                    while ($rowPs = mysqli_fetch_assoc($result_paciente_status)) {
+                ?>
+                        <option value='<?php echo $rowPs['id'] ?>'> <?php echo $rowPs['status'] ?> </option>
+                <?php
+                    }
+                ?>
+            </select>
+        </div>
 
         <div class="form-row">
             <div class="form-group">
@@ -246,7 +274,7 @@
                     }
                 }
             } catch(Exception $e) {
-                echo "<p style='color:red; text-align:center;'>Erro ao buscar formulário.</p>";
+                echo "<p style='color:red; text-align:center;'>Erro ao buscar formulário.</p>" . $e;
                 error_log("Error ao bsucar formulário. " . $e->getMessage());
             }
         ?>
